@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kindling Frequency Mixer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ======================================
+   CSS VARIABLES — Kindling Palette
+   ====================================== */
+:root {
+  --bg-deep: #1a1612;
+  --bg-card: #231f1a;
+  --bg-card-hover: #2c2620;
+  --bg-surface: #1e1a16;
+  --bg-overlay: rgba(26, 22, 18, 0.95);
+  --text-primary: #e8ddd0;
+  --text-secondary: #a89880;
+  --text-muted: #7a6e60;
+  --accent-warm: #c4956a;
+  --accent-ember: #d4845a;
+  --accent-glow: #e0a870;
+  --accent-flame: #c97040;
+  --border-subtle: rgba(168, 152, 128, 0.15);
+  --border-active: rgba(196, 149, 106, 0.4);
+  --shadow-soft: 0 2px 20px rgba(0,0,0,0.3);
+  --shadow-glow: 0 0 30px rgba(196, 149, 106, 0.1);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Jost', sans-serif;
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ======================================
+   RESET & BASE
+   ====================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ======================================
+   HEADER
+   ====================================== */
+.site-header {
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-warm), transparent);
+}
+
+.site-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.site-subtitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ======================================
+   TOOLBAR
+   ====================================== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.tag-btn {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.tag-btn:hover {
+  border-color: var(--accent-warm);
+  color: var(--accent-warm);
+}
+
+.tag-btn.active {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+  color: var(--bg-deep);
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn:hover {
+  border-color: var(--accent-warm);
+  color: var(--accent-warm);
+}
+
+.btn-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.btn-accent {
+  border-color: var(--accent-warm);
+  color: var(--accent-warm);
+}
+
+.btn-accent:hover {
+  background: var(--accent-warm);
+  color: var(--bg-deep);
+}
+
+/* ======================================
+   CURATED SETS BAR
+   ====================================== */
+.sets-bar {
+  padding: 0.8rem 1.5rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sets-bar::-webkit-scrollbar { height: 2px; }
+.sets-bar::-webkit-scrollbar-track { background: transparent; }
+.sets-bar::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
+
+.set-chip {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 400;
+  font-style: italic;
+  padding: 0.4rem 1.2rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  display: inline-block;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.set-chip:hover {
+  border-color: var(--accent-glow);
+  color: var(--accent-glow);
+}
+
+.set-chip.active {
+  background: rgba(196, 149, 106, 0.15);
+  border-color: var(--accent-warm);
+  color: var(--accent-warm);
+}
+
+/* ======================================
+   GALLERY GRID
+   ====================================== */
+.gallery {
+  padding: 1.5rem;
+  padding-bottom: 160px; /* space for mixer dock */
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ======================================
+   PIECE CARD
+   ====================================== */
+.piece-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  position: relative;
+}
+
+.piece-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-active);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.piece-card.selected {
+  border-color: var(--accent-warm);
+  box-shadow: var(--shadow-glow), inset 0 0 0 1px var(--accent-warm);
+}
+
+.piece-card.selected::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-warm), var(--accent-glow), var(--accent-warm));
+  z-index: 2;
+}
+
+.card-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+.card-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.piece-card:hover .card-image-wrap img {
+  transform: scale(1.03);
+}
+
+.card-select-badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-smooth);
+  z-index: 2;
+}
+
+.piece-card.selected .card-select-badge {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+}
+
+.card-select-badge svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: white;
+  stroke-width: 2.5;
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+
+.piece-card.selected .card-select-badge svg {
+  opacity: 1;
+}
+
+.card-image-count {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.8);
+  background: rgba(0,0,0,0.5);
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  z-index: 2;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.card-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-tags {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.card-tag {
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+}
+
+.card-detail-btn {
+  position: absolute;
+  bottom: 0.8rem;
+  right: 0.8rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  z-index: 2;
+}
+
+.card-detail-btn:hover {
+  border-color: var(--accent-warm);
+  background: var(--bg-card-hover);
+}
+
+.card-detail-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+}
+
+/* ======================================
+   PLACEHOLDER IMAGES
+   ====================================== */
+.placeholder-img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-style: italic;
+  color: var(--text-muted);
+  opacity: 0.3;
+}
+
+.placeholder-img.ph-1 { background: linear-gradient(135deg, #2a2420, #3a2a20); }
+.placeholder-img.ph-2 { background: linear-gradient(135deg, #1e2428, #1a2830); }
+.placeholder-img.ph-3 { background: linear-gradient(135deg, #282420, #302820); }
+.placeholder-img.ph-4 { background: linear-gradient(135deg, #241e20, #301e22); }
+.placeholder-img.ph-5 { background: linear-gradient(135deg, #202422, #1a2820); }
+
+/* ======================================
+   MIXER DOCK
+   ====================================== */
+.mixer-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(100%);
+}
+
+.mixer-dock.visible {
+  transform: translateY(0);
+}
+
+.mixer-collapsed {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-active);
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.4);
+}
+
+.mixer-collapsed-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mixer-count {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--accent-warm);
+}
+
+.mixer-collapsed-thumbs {
+  display: flex;
+  gap: -8px;
+}
+
+.mixer-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-active);
+  object-fit: cover;
+  background: var(--bg-card);
+  margin-left: -6px;
+}
+
+.mixer-thumb:first-child { margin-left: 0; }
+
+.mixer-collapsed-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.mixer-play-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-warm);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-smooth);
+}
+
+.mixer-play-btn:hover {
+  background: var(--accent-warm);
+}
+
+.mixer-play-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent-warm);
+  transition: fill var(--transition-smooth);
+}
+
+.mixer-play-btn:hover svg {
+  fill: var(--bg-deep);
+}
+
+.mixer-expand-btn {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color var(--transition-smooth);
+}
+
+.mixer-expand-btn:hover {
+  color: var(--accent-warm);
+}
+
+/* ======================================
+   MIXER EXPANDED (full panel)
+   ====================================== */
+.mixer-expanded {
+  background: var(--bg-overlay);
+  border-top: 1px solid var(--border-active);
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: none;
+  box-shadow: 0 -4px 40px rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.mixer-expanded.open {
+  display: block;
+}
+
+.mixer-expanded.open + .mixer-collapsed {
+  display: none;
+}
+
+.mixer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.mixer-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.mixer-master-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mixer-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.2rem;
+  transition: color var(--transition-smooth);
+}
+
+.mixer-close-btn:hover { color: var(--text-primary); }
+
+/* ======================================
+   CHANNEL STRIPS
+   ====================================== */
+.channels {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.channels::-webkit-scrollbar { height: 3px; }
+.channels::-webkit-scrollbar-track { background: transparent; }
+.channels::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
+
+.channel-strip {
+  flex: 0 0 auto;
+  width: 140px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  transition: border-color var(--transition-smooth);
+}
+
+.channel-strip.muted {
+  opacity: 0.45;
+  border-color: transparent;
+}
+
+.channel-thumb {
+  width: 80px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-deep);
+}
+
+.channel-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.channel-mute-btn {
+  width: 100%;
+  padding: 0.35rem 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.channel-mute-btn:hover {
+  border-color: var(--accent-warm);
+}
+
+.channel-strip.muted .channel-mute-btn {
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
+}
+
+.channel-volume {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  outline: none;
+}
+
+.channel-volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-warm);
+  cursor: pointer;
+  border: 2px solid var(--bg-card);
+}
+
+.channel-volume::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-warm);
+  cursor: pointer;
+  border: 2px solid var(--bg-card);
+}
+
+.channel-remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.1rem;
+  transition: color var(--transition-smooth);
+}
+
+.channel-remove-btn:hover { color: var(--accent-ember); }
+
+/* ======================================
+   TONE GENERATOR
+   ====================================== */
+.tone-section {
+  margin-top: 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.tone-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.tone-section-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tone-section-title .tone-wave {
+  color: var(--accent-glow);
+  font-size: 1.25rem;
+}
+
+.tone-strips {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tone-strips::-webkit-scrollbar { height: 3px; }
+.tone-strips::-webkit-scrollbar-track { background: transparent; }
+.tone-strips::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
+
+.tone-empty {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  padding: 0.4rem 0;
+}
+
+.tone-strip {
+  flex: 0 0 auto;
+  width: 152px;
+  gap: 0.55rem;
+}
+
+/* When muted, dim everything EXCEPT the mute button so it stays easy to click. */
+.tone-strip.muted { opacity: 1; }
+.tone-strip.muted > *:not(.channel-mute-btn) { opacity: 0.45; }
+.tone-strip.muted .channel-mute-btn { opacity: 0.85; color: var(--accent-warm); }
+
+.tone-pitch-row {
+  display: flex;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.tone-select,
+.tone-cents-input {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.35rem;
+  outline: none;
+  transition: border-color var(--transition-smooth);
+}
+
+.tone-select:focus,
+.tone-cents-input:focus { border-color: var(--accent-warm); }
+
+.tone-pitch-select { width: 100%; }
+.tone-timbre-select { width: 100%; }
+
+.tone-cents-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.tone-cents-row label {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tone-cents-input {
+  flex: 1;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.tone-freq {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  color: var(--accent-warm);
+  letter-spacing: 0.02em;
+}
+
+/* ======================================
+   DETAIL MODAL
+   ====================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  max-width: 700px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0,0,0,0.4);
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background var(--transition-smooth);
+}
+
+.modal-close:hover { background: rgba(0,0,0,0.6); }
+
+.modal-carousel {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--bg-deep);
+}
+
+.modal-carousel img, .modal-carousel .placeholder-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.modal-carousel img.active, .modal-carousel .placeholder-img.active {
+  opacity: 1;
+}
+
+.carousel-nav {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+  z-index: 5;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.carousel-dot.active {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.modal-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.modal-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+}
+
+.modal-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.modal-private {
+  background: rgba(196, 149, 106, 0.08);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.modal-private-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--accent-warm);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.modal-private-field {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+}
+
+.modal-private-field strong {
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.modal-audio-player {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.modal-audio-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-warm);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-smooth);
+  flex-shrink: 0;
+}
+
+.modal-audio-btn:hover { background: var(--accent-warm); }
+.modal-audio-btn svg { width: 18px; height: 18px; fill: var(--accent-warm); transition: fill var(--transition-smooth); }
+.modal-audio-btn:hover svg { fill: var(--bg-deep); }
+
+.modal-audio-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ======================================
+   UNLOCK MODAL
+   ====================================== */
+.unlock-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.unlock-input {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  outline: none;
+  width: 160px;
+  transition: border-color var(--transition-smooth);
+}
+
+.unlock-input:focus {
+  border-color: var(--accent-warm);
+}
+
+.unlock-status {
+  font-size: 0.75rem;
+  color: var(--accent-warm);
+  font-style: italic;
+}
+
+/* ======================================
+   SHARE TOAST
+   ====================================== */
+.share-toast {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--accent-warm);
+  color: var(--bg-deep);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  z-index: 600;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.share-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ======================================
+   EMPTY STATE
+   ====================================== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-state p {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ======================================
+   LOADING
+   ====================================== */
+.loading {
+  text-align: center;
+  padding: 4rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--border-subtle);
+  border-top-color: var(--accent-warm);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ======================================
+   RESPONSIVE
+   ====================================== */
+@media (max-width: 768px) {
+  .site-title { font-size: 1.8rem; }
+  .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
+  .card-body { padding: 0.75rem; }
+  .card-title { font-size: 1rem; }
+  .card-desc { font-size: 0.75rem; -webkit-line-clamp: 1; }
+  .toolbar { padding: 0.75rem 1rem; }
+  .gallery { padding: 1rem; padding-bottom: 140px; }
+
+  .mixer-expanded {
+    max-height: 80vh;
+    padding: 1rem;
+  }
+
+  .channel-strip {
+    width: 120px;
+    padding: 0.6rem;
+  }
+
+  .channel-thumb { width: 60px; height: 45px; }
+  .channel-name { font-size: 0.75rem; }
+
+  .modal-content { border-radius: var(--radius-md); }
+  .modal-carousel { border-radius: var(--radius-md) var(--radius-md) 0 0; aspect-ratio: 4/3; }
+  .modal-title { font-size: 1.4rem; }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .site-header { padding: 2rem 1rem 1.5rem; }
+  .site-title { font-size: 1.5rem; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbar-left, .toolbar-right { justify-content: center; }
+}
+
+/* ======================================
+   SCROLLBAR STYLING
+   ====================================== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <h1 class="site-title">Kindling Frequency Mixer</h1>
+  <p class="site-subtitle">listen · layer · discover</p>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <div class="filter-tags" id="filterTags"></div>
+  </div>
+  <div class="toolbar-right">
+    <button class="btn btn-accent" id="toolbarAddToneBtn" title="Add a synthetic tone">
+      <span class="btn-icon">∿</span> Add Tone
+    </button>
+    <div class="unlock-bar" id="unlockBar">
+      <button class="btn" id="unlockToggle" title="Unlock private details">
+        <span class="btn-icon">🔒</span> Unlock
+      </button>
+      <input type="password" class="unlock-input" id="unlockInput" placeholder="Passphrase…" style="display:none">
+      <button class="btn" id="unlockSubmit" style="display:none">Go</button>
+      <span class="unlock-status" id="unlockStatus"></span>
+    </div>
+  </div>
+</div>
+
+<!-- CURATED SETS -->
+<div class="sets-bar" id="setsBar" style="display:none"></div>
+
+<!-- GALLERY -->
+<main class="gallery" id="gallery">
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+    <p style="color: var(--text-muted); font-style: italic;">Loading frequencies…</p>
+  </div>
+  <div class="gallery-grid" id="galleryGrid"></div>
+</main>
+
+<!-- MIXER DOCK -->
+<div class="mixer-dock" id="mixerDock">
+  <div class="mixer-expanded" id="mixerExpanded">
+    <div class="mixer-header">
+      <span class="mixer-title">Frequency Mixer</span>
+      <div class="mixer-master-controls">
+        <button class="mixer-play-btn" id="masterPlayBtn" title="Play All">
+          <svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
+        </button>
+        <button class="btn btn-accent" id="masterStopBtn">Stop</button>
+        <button class="btn" id="shareBtn" title="Copy share link">
+          <span class="btn-icon">🔗</span> Share
+        </button>
+        <button class="mixer-close-btn" id="mixerCloseBtn" title="Minimize">▾</button>
+      </div>
+    </div>
+    <div class="channels" id="channels"></div>
+    <div class="tone-section" id="toneSection">
+      <div class="tone-section-header">
+        <span class="tone-section-title"><span class="tone-wave">∿</span> Tone Generator</span>
+        <div style="display:flex;gap:0.4rem;align-items:center;">
+          <button class="btn btn-accent" id="addToneBtn"><span class="btn-icon">＋</span> Add Tone</button>
+          <button class="btn" id="tonesMuteAllBtn">Mute all</button>
+          <button class="btn" id="tonesUnmuteAllBtn">Unmute all</button>
+        </div>
+      </div>
+      <div class="tone-strips" id="toneStrips"></div>
+    </div>
+  </div>
+  <div class="mixer-collapsed" id="mixerCollapsed">
+    <div class="mixer-collapsed-info">
+      <span class="mixer-count" id="mixerCount">0 selected</span>
+      <div class="mixer-collapsed-thumbs" id="mixerThumbs"></div>
+    </div>
+    <div class="mixer-collapsed-controls">
+      <button class="mixer-play-btn" id="collapsedPlayBtn" title="Play All">
+        <svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
+      </button>
+      <button class="mixer-expand-btn" id="mixerExpandBtn">Mixer ▴</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE TOAST -->
+<div class="share-toast" id="shareToast">Link copied to clipboard</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-content" id="modalContent">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-carousel" id="modalCarousel"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script>
+/* ======================================
+   APP STATE
+   ====================================== */
+const state = {
+  pieces: [],
+  sets: [],
+  selectedSlugs: new Set(),
+  activeTags: new Set(),
+  allTags: new Set(),
+  unlocked: false,
+  passphrase: null,
+  playing: false,
+  audioCtx: null,
+  channels: {}, // slug -> { source, gainNode, buffer, muted }
+  tones: [],    // [{ id, note, octave, cents, timbre, volume, muted, gainNode, voices, tremolo, preset }]
+  toneIdCounter: 0,
+  expandedMixer: false,
+};
+
+/* ======================================
+   INIT
+   ====================================== */
+async function init() {
+  try {
+    const resp = await fetch('index.json');
+    const data = await resp.json();
+    state.pieces = data.pieces || [];
+    state.sets = data.sets || [];
+
+    // Collect all tags
+    state.pieces.forEach(p => (p.tags || []).forEach(t => state.allTags.add(t)));
+
+    renderFilterTags();
+    renderSets();
+    renderGallery();
+    document.getElementById('loading').style.display = 'none';
+
+    // Apply querystring selections after render
+    applyUrlParams();
+  } catch (e) {
+    document.getElementById('loading').innerHTML =
+      '<p style="color: var(--text-muted); font-style: italic;">Could not load index.json — have you run the build script?</p>';
+  }
+}
+
+/* ======================================
+   URL SHARING — ?mix=slug1,slug2,slug3
+   ====================================== */
+function applyUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const mixParam = params.get('mix');
+  if (mixParam) {
+    const slugs = mixParam.split(',').map(s => s.trim()).filter(Boolean);
+    const validSlugs = slugs.filter(s => state.pieces.some(p => p.slug === s));
+    if (validSlugs.length > 0) {
+      validSlugs.forEach(s => state.selectedSlugs.add(s));
+      renderGallery();
+      updateMixerDock();
+      document.getElementById('mixerExpanded').classList.add('open');
+      state.expandedMixer = true;
+    }
+  }
+  const tonesParam = params.get('tones');
+  if (tonesParam) {
+    tonesParam.split(',').forEach(str => {
+      const opts = parseToneParam(str.trim());
+      if (opts) addTone(opts);
+    });
+    if (state.tones.length > 0) {
+      armTonesAutostart();
+      document.getElementById('mixerExpanded').classList.add('open');
+      state.expandedMixer = true;
+    }
+  }
+}
+
+function buildShareUrl() {
+  const url = new URL(window.location.pathname, window.location.origin);
+  if (state.selectedSlugs.size > 0) {
+    url.searchParams.set('mix', [...state.selectedSlugs].join(','));
+  }
+  if (state.tones.length > 0) {
+    url.searchParams.set('tones', state.tones.map(toneToParam).join(','));
+  }
+  return url.searchParams.toString() ? url.toString() : (window.location.origin + window.location.pathname);
+}
+
+function copyShareLink() {
+  const url = buildShareUrl();
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Link copied to clipboard');
+  }).catch(() => {
+    // Fallback for older browsers
+    const input = document.createElement('input');
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    showToast('Link copied to clipboard');
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('shareToast');
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 2500);
+}
+
+function updateUrlSilently() {
+  const url = new URL(window.location.pathname, window.location.origin);
+  if (state.selectedSlugs.size > 0) {
+    url.searchParams.set('mix', [...state.selectedSlugs].join(','));
+  }
+  if (state.tones.length > 0) {
+    url.searchParams.set('tones', state.tones.map(toneToParam).join(','));
+  }
+  const qs = url.searchParams.toString();
+  window.history.replaceState(null, '', qs ? url.toString() : window.location.pathname);
+}
+
+/* ======================================
+   FILTER TAGS
+   ====================================== */
+function renderFilterTags() {
+  const container = document.getElementById('filterTags');
+  const allBtn = document.createElement('button');
+  allBtn.className = 'tag-btn active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = () => {
+    state.activeTags.clear();
+    renderFilterTags();
+    renderGallery();
+  };
+  container.innerHTML = '';
+  if (state.activeTags.size === 0) allBtn.classList.add('active');
+  else allBtn.classList.remove('active');
+  container.appendChild(allBtn);
+
+  [...state.allTags].sort().forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-btn' + (state.activeTags.has(tag) ? ' active' : '');
+    btn.textContent = tag;
+    btn.onclick = () => {
+      if (state.activeTags.has(tag)) state.activeTags.delete(tag);
+      else state.activeTags.add(tag);
+      renderFilterTags();
+      renderGallery();
+    };
+    container.appendChild(btn);
+  });
+}
+
+/* ======================================
+   CURATED SETS
+   ====================================== */
+function renderSets() {
+  const bar = document.getElementById('setsBar');
+  if (state.sets.length === 0) return;
+  bar.style.display = 'block';
+  bar.innerHTML = '<span style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-right:0.5rem;">Sets:</span>';
+  state.sets.forEach(set => {
+    const chip = document.createElement('button');
+    chip.className = 'set-chip';
+    chip.textContent = set.name;
+    chip.title = set.description || '';
+    chip.onclick = () => {
+      // Toggle: if all pieces in set are selected, deselect them
+      const allSelected = set.pieces.every(s => state.selectedSlugs.has(s));
+      if (allSelected) {
+        set.pieces.forEach(s => state.selectedSlugs.delete(s));
+      } else {
+        set.pieces.forEach(s => state.selectedSlugs.add(s));
+      }
+      renderGallery();
+      updateMixerDock();
+      updateUrlSilently();
+    };
+    bar.appendChild(chip);
+  });
+}
+
+/* ======================================
+   GALLERY
+   ====================================== */
+function getFilteredPieces() {
+  if (state.activeTags.size === 0) return state.pieces;
+  return state.pieces.filter(p =>
+    (p.tags || []).some(t => state.activeTags.has(t))
+  );
+}
+
+function renderGallery() {
+  const grid = document.getElementById('galleryGrid');
+  const pieces = getFilteredPieces();
+  grid.innerHTML = '';
+
+  if (pieces.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><p>No pieces match the current filters</p></div>';
+    return;
+  }
+
+  pieces.forEach((piece, idx) => {
+    const card = document.createElement('div');
+    card.className = 'piece-card' + (state.selectedSlugs.has(piece.slug) ? ' selected' : '');
+    card.dataset.slug = piece.slug;
+
+    const imgSrc = piece.images && piece.images.length > 0 ? piece.images[0] : null;
+    const phClass = `ph-${(idx % 5) + 1}`;
+    const imgCount = (piece.images || []).length;
+
+    card.innerHTML = `
+      <div class="card-image-wrap">
+        ${imgSrc
+          ? `<img src="${imgSrc}" alt="${piece.title}" loading="lazy" onerror="this.outerHTML='<div class=\\'placeholder-img ${phClass}\\'>${piece.title[0]}</div>'">`
+          : `<div class="placeholder-img ${phClass}">${piece.title[0]}</div>`
+        }
+        <div class="card-select-badge">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        ${imgCount > 1 ? `<span class="card-image-count">${imgCount} images</span>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-title">${piece.title}</div>
+        <div class="card-desc">${piece.description || ''}</div>
+        <div class="card-tags">${(piece.tags || []).map(t => `<span class="card-tag">${t}</span>`).join('')}</div>
+      </div>
+      <button class="card-detail-btn" title="View details">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      </button>
+    `;
+
+    // Select/deselect on card click
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.card-detail-btn')) return;
+      toggleSelection(piece.slug);
+    });
+
+    // Detail button
+    card.querySelector('.card-detail-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDetail(piece);
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+function toggleSelection(slug) {
+  if (state.selectedSlugs.has(slug)) {
+    state.selectedSlugs.delete(slug);
+    removeChannel(slug);
+  } else {
+    state.selectedSlugs.add(slug);
+    if (state.playing) playAll();
+  }
+  renderGallery();
+  updateMixerDock();
+  updateUrlSilently();
+}
+
+/* ======================================
+   MIXER DOCK
+   ====================================== */
+function updateMixerDock() {
+  const dock = document.getElementById('mixerDock');
+  const count = state.selectedSlugs.size;
+
+  if (count === 0 && state.tones.length === 0) {
+    dock.classList.remove('visible');
+    if (state.playing) stopAll();
+    return;
+  }
+
+  dock.classList.add('visible');
+
+  // Collapsed info
+  document.getElementById('mixerCount').textContent = count > 0
+    ? `${count} selected`
+    : `${state.tones.length} tone${state.tones.length !== 1 ? 's' : ''}`;
+
+  // Thumbs
+  const thumbsContainer = document.getElementById('mixerThumbs');
+  thumbsContainer.innerHTML = '';
+  [...state.selectedSlugs].slice(0, 5).forEach(slug => {
+    const piece = state.pieces.find(p => p.slug === slug);
+    if (!piece) return;
+    if (piece.images && piece.images.length > 0) {
+      const img = document.createElement('img');
+      img.className = 'mixer-thumb';
+      img.src = piece.images[0];
+      img.alt = piece.title;
+      thumbsContainer.appendChild(img);
+    } else {
+      const div = document.createElement('div');
+      div.className = 'mixer-thumb';
+      div.style.display = 'flex';
+      div.style.alignItems = 'center';
+      div.style.justifyContent = 'center';
+      div.style.fontSize = '0.7rem';
+      div.style.color = 'var(--text-muted)';
+      div.textContent = piece.title[0];
+      thumbsContainer.appendChild(div);
+    }
+  });
+
+  // Expanded channels and tones
+  renderChannels();
+  renderToneStrips();
+}
+
+function renderChannels() {
+  const container = document.getElementById('channels');
+  container.innerHTML = '';
+
+  [...state.selectedSlugs].forEach(slug => {
+    const piece = state.pieces.find(p => p.slug === slug);
+    if (!piece) return;
+
+    const ch = state.channels[slug];
+    const isMuted = ch ? ch.muted : false;
+    const volume = ch ? ch.volume : 1;
+
+    const strip = document.createElement('div');
+    strip.className = 'channel-strip' + (isMuted ? ' muted' : '');
+    strip.dataset.slug = slug;
+
+    const imgSrc = piece.images && piece.images.length > 0 ? piece.images[0] : null;
+
+    strip.innerHTML = `
+      ${imgSrc
+        ? `<img class="channel-thumb" src="${imgSrc}" alt="${piece.title}">`
+        : `<div class="channel-thumb" style="display:flex;align-items:center;justify-content:center;font-family:var(--font-display);color:var(--text-muted);font-style:italic;">${piece.title[0]}</div>`
+      }
+      <div class="channel-name" title="${piece.title}">${piece.title}</div>
+      <button class="channel-mute-btn">${isMuted ? 'Unmute' : 'Mute'}</button>
+      <input type="range" class="channel-volume" min="0" max="1" step="0.05" value="${volume}">
+      <button class="channel-remove-btn" title="Remove">✕ remove</button>
+    `;
+
+    strip.querySelector('.channel-mute-btn').addEventListener('click', () => {
+      toggleMute(slug);
+    });
+
+    strip.querySelector('.channel-volume').addEventListener('input', (e) => {
+      setChannelVolume(slug, parseFloat(e.target.value));
+    });
+
+    strip.querySelector('.channel-remove-btn').addEventListener('click', () => {
+      toggleSelection(slug);
+    });
+
+    container.appendChild(strip);
+  });
+}
+
+/* ======================================
+   WEB AUDIO ENGINE
+   ====================================== */
+function getAudioContext() {
+  if (!state.audioCtx) {
+    state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (state.audioCtx.state === 'suspended') {
+    state.audioCtx.resume();
+  }
+  return state.audioCtx;
+}
+
+async function loadAudioBuffer(url) {
+  const ctx = getAudioContext();
+  const response = await fetch(url);
+  const arrayBuffer = await response.arrayBuffer();
+  return await ctx.decodeAudioData(arrayBuffer);
+}
+
+async function playAll() {
+  const ctx = getAudioContext();
+
+  // Load and start all selected pieces
+  const loadPromises = [...state.selectedSlugs].map(async (slug) => {
+    const piece = state.pieces.find(p => p.slug === slug);
+    if (!piece || !piece.audio) return;
+
+    // If already loaded and playing, skip
+    if (state.channels[slug] && state.channels[slug].source) return;
+
+    try {
+      let buffer;
+      if (state.channels[slug] && state.channels[slug].buffer) {
+        buffer = state.channels[slug].buffer;
+      } else {
+        buffer = await loadAudioBuffer(piece.audio);
+      }
+
+      const gainNode = ctx.createGain();
+      const existing = state.channels[slug];
+      const vol = existing ? existing.volume : 1;
+      const muted = existing ? existing.muted : false;
+      gainNode.gain.value = muted ? 0 : vol;
+      gainNode.connect(ctx.destination);
+
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+      source.connect(gainNode);
+      source.start(0);
+
+      state.channels[slug] = {
+        source,
+        gainNode,
+        buffer,
+        muted,
+        volume: vol,
+      };
+    } catch (e) {
+      console.warn(`Could not load audio for ${slug}:`, e);
+    }
+  });
+
+  await Promise.all(loadPromises);
+  state.playing = true;
+  updatePlayButtons();
+}
+
+function stopAll() {
+  Object.keys(state.channels).forEach(slug => {
+    const ch = state.channels[slug];
+    if (ch.source) {
+      try { ch.source.stop(); } catch(e) {}
+    }
+    // Keep buffer and settings, clear source
+    state.channels[slug] = {
+      source: null,
+      gainNode: null,
+      buffer: ch.buffer,
+      muted: ch.muted,
+      volume: ch.volume,
+    };
+  });
+  state.playing = false;
+  updatePlayButtons();
+}
+
+function toggleMute(slug) {
+  const ch = state.channels[slug];
+  if (!ch) {
+    // Not yet played; create a placeholder
+    state.channels[slug] = { source: null, gainNode: null, buffer: null, muted: true, volume: 1 };
+  } else {
+    ch.muted = !ch.muted;
+    if (ch.gainNode) {
+      ch.gainNode.gain.value = ch.muted ? 0 : ch.volume;
+    }
+  }
+  renderChannels();
+}
+
+function setChannelVolume(slug, vol) {
+  const ch = state.channels[slug];
+  if (!ch) return;
+  ch.volume = vol;
+  if (ch.gainNode && !ch.muted) {
+    ch.gainNode.gain.value = vol;
+  }
+}
+
+function removeChannel(slug) {
+  const ch = state.channels[slug];
+  if (ch && ch.source) {
+    try { ch.source.stop(); } catch(e) {}
+  }
+  delete state.channels[slug];
+}
+
+function updatePlayButtons() {
+  const playSvg = '<svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>';
+  const pauseSvg = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  const svg = state.playing ? pauseSvg : playSvg;
+  document.getElementById('masterPlayBtn').innerHTML = svg;
+  document.getElementById('collapsedPlayBtn').innerHTML = svg;
+}
+
+/* ======================================
+   TONE GENERATOR — synthetic singing bowls
+   ====================================== */
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const TONE_NOTE_ORDER = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#'];
+const TONE_OCTAVES = [2, 3, 4, 5];
+
+// Each timbre is built from a set of partial "voices" layered over the fundamental.
+// ratio = frequency multiple, gain = relative amplitude, detune = cents offset (beating).
+// tremolo = slow amplitude LFO in Hz; tremoloDepth = fraction of volume it sweeps.
+const TONE_TIMBRES = {
+  crystal: {
+    // Empirically derived from FFT of 11 real Kindling bowl recordings.
+    // Real crystal bowls are nearly pure: strong fundamental + faint octave,
+    // little else. Shimmer = ~1 Hz beat from the split fundamental (~5-9 cents).
+    label: 'Crystal Bowl',
+    type: 'sine',
+    voices: [
+      { ratio: 1,   gain: 1.0,  detune: 0 },
+      { ratio: 1,   gain: 0.2,  detune: 7 },    // beating twin: ~1 Hz rate, low gain = subtle shimmer (not deep in/out)
+      { ratio: 2.0, gain: 0.10, detune: 9 },    // octave partial: faint (~ -20 dB)
+    ],
+    tremolo: 0.1,
+    tremoloDepth: 0.08,
+  },
+  pure: {
+    label: 'Pure',
+    type: 'sine',
+    voices: [ { ratio: 1, gain: 1.0, detune: 0 } ],
+    tremolo: 0,
+    tremoloDepth: 0,
+  },
+};
+const DEFAULT_TIMBRE = 'crystal';
+const TONE_DEFAULT_VOLUME = 0.35;
+
+function noteToFreq(note, octave, cents) {
+  const idx = NOTE_NAMES.indexOf(note);
+  if (idx === -1) return 440;
+  const midi = (octave + 1) * 12 + idx; // A4 (octave 4, idx 9) -> 69
+  return 440 * Math.pow(2, (midi - 69) / 12) * Math.pow(2, (cents || 0) / 1200);
+}
+
+function buildToneNodes(tone) {
+  const ctx = getAudioContext();
+  const preset = TONE_TIMBRES[tone.timbre] || TONE_TIMBRES[DEFAULT_TIMBRE];
+  const baseFreq = noteToFreq(tone.note, tone.octave, tone.cents);
+  const now = ctx.currentTime;
+  const target = tone.muted ? 0 : tone.volume;
+
+  // Master gain for the whole tone, with a gentle swell to avoid clicks.
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0, now);
+  master.gain.linearRampToValueAtTime(target, now + 0.6);
+  master.connect(ctx.destination);
+
+  const voices = preset.voices.map(v => {
+    const osc = ctx.createOscillator();
+    osc.type = preset.type;
+    osc.frequency.value = baseFreq * v.ratio;
+    osc.detune.value = v.detune || 0;
+    const vGain = ctx.createGain();
+    vGain.gain.value = v.gain;
+    osc.connect(vGain);
+    vGain.connect(master);
+    osc.start(now);
+    return { osc, vGain, ratio: v.ratio };
+  });
+
+  let tremolo = null;
+  if (preset.tremolo > 0) {
+    const lfo = ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = preset.tremolo;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = preset.tremoloDepth * target;
+    lfo.connect(lfoGain);
+    lfoGain.connect(master.gain); // modulates around the master's intrinsic value
+    lfo.start(now);
+    tremolo = { lfo, lfoGain };
+  }
+
+  tone.gainNode = master;
+  tone.voices = voices;
+  tone.tremolo = tremolo;
+  tone.preset = preset;
+}
+
+function startTone(tone) {
+  if (tone.gainNode) return; // already sounding
+  buildToneNodes(tone);
+}
+
+// Immediate teardown — used when rebuilding (e.g. timbre change).
+function hardStopTone(tone) {
+  (tone.voices || []).forEach(v => {
+    try { v.osc.stop(); } catch (e) {}
+    try { v.osc.disconnect(); v.vGain.disconnect(); } catch (e) {}
+  });
+  if (tone.tremolo) {
+    try { tone.tremolo.lfo.stop(); } catch (e) {}
+    try { tone.tremolo.lfo.disconnect(); tone.tremolo.lfoGain.disconnect(); } catch (e) {}
+  }
+  if (tone.gainNode) { try { tone.gainNode.disconnect(); } catch (e) {} }
+  tone.gainNode = null;
+  tone.voices = null;
+  tone.tremolo = null;
+}
+
+// Graceful teardown with a short fade — used on remove.
+function stopTone(tone) {
+  const ctx = state.audioCtx;
+  if (!tone.gainNode || !ctx) { hardStopTone(tone); return; }
+  const now = ctx.currentTime;
+  const g = tone.gainNode;
+  const voices = tone.voices || [];
+  const tremolo = tone.tremolo;
+  try {
+    g.gain.cancelScheduledValues(now);
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.linearRampToValueAtTime(0, now + 0.25);
+  } catch (e) {}
+  voices.forEach(v => { try { v.osc.stop(now + 0.3); } catch (e) {} });
+  if (tremolo) { try { tremolo.lfo.stop(now + 0.3); } catch (e) {} }
+  setTimeout(() => { try { g.disconnect(); } catch (e) {} }, 400);
+  tone.gainNode = null;
+  tone.voices = null;
+  tone.tremolo = null;
+}
+
+function updateTonePitch(tone) {
+  const ctx = state.audioCtx;
+  if (!tone.voices || !ctx) return;
+  const baseFreq = noteToFreq(tone.note, tone.octave, tone.cents);
+  const now = ctx.currentTime;
+  tone.voices.forEach(v => {
+    try { v.osc.frequency.setTargetAtTime(baseFreq * v.ratio, now, 0.02); } catch (e) {}
+  });
+}
+
+function ensureTonesPlaying() {
+  state.tones.forEach(t => { if (!t.gainNode) startTone(t); });
+}
+
+function addTone(opts) {
+  getAudioContext(); // resume audio under the user gesture that called this
+  const last = state.tones[state.tones.length - 1];
+  const tone = {
+    id: ++state.toneIdCounter,
+    note: (opts && opts.note) || (last ? last.note : 'G'),
+    octave: (opts && opts.octave) || (last ? last.octave : 3),
+    cents: (opts && typeof opts.cents === 'number') ? opts.cents : 0,
+    timbre: (opts && opts.timbre) || DEFAULT_TIMBRE,
+    volume: TONE_DEFAULT_VOLUME,
+    muted: false,
+    gainNode: null, voices: null, tremolo: null, preset: null,
+  };
+  state.tones.push(tone);
+  startTone(tone);
+  document.getElementById('mixerExpanded').classList.add('open');
+  state.expandedMixer = true;
+  updateMixerDock();
+  updateUrlSilently();
+}
+
+function removeTone(id) {
+  const i = state.tones.findIndex(t => t.id === id);
+  if (i === -1) return;
+  stopTone(state.tones[i]);
+  state.tones.splice(i, 1);
+  updateMixerDock();
+  updateUrlSilently();
+}
+
+function refreshToneFreq(id) {
+  const tone = state.tones.find(t => t.id === id);
+  if (!tone) return;
+  const strip = document.querySelector(`.tone-strip[data-id="${id}"]`);
+  if (!strip) return;
+  const el = strip.querySelector('.tone-freq');
+  if (el) el.textContent = noteToFreq(tone.note, tone.octave, tone.cents).toFixed(1) + ' Hz';
+}
+
+function setToneNote(id, note) {
+  const tone = state.tones.find(t => t.id === id);
+  if (!tone) return;
+  tone.note = note;
+  updateTonePitch(tone);
+  refreshToneFreq(id);
+  updateUrlSilently();
+}
+
+function setToneOctave(id, octave) {
+  const tone = state.tones.find(t => t.id === id);
+  if (!tone) return;
+  tone.octave = octave;
+  updateTonePitch(tone);
+  refreshToneFreq(id);
+  updateUrlSilently();
+}
+
+function setTonePitch(id, val) {
+  const tone = state.tones.find(t => t.id === id); if (!tone) return;
+  const parts = val.split(':');
+  tone.octave = parseInt(parts[0], 10);
+  tone.note = parts[1];
+  updateTonePitch(tone); refreshToneFreq(id); updateUrlSilently();
+}
+
+function setAllTonesMuted(muted) {
+  const ctx = state.audioCtx;
+  state.tones.forEach(t => {
+    t.muted = muted;
+    if (t.gainNode && ctx) {
+      const now = ctx.currentTime;
+      const target = muted ? 0 : t.volume;
+      t.gainNode.gain.setTargetAtTime(target, now, 0.03);
+      if (t.tremolo && t.preset) {
+        t.tremolo.lfoGain.gain.setTargetAtTime(t.preset.tremoloDepth * target, now, 0.03);
+      }
+    }
+  });
+  renderToneStrips();
+}
+
+function setToneCents(id, raw) {
+  const tone = state.tones.find(t => t.id === id);
+  if (!tone) return;
+  let c = parseInt(raw, 10);
+  if (isNaN(c)) c = 0;
+  c = Math.max(-100, Math.min(100, c));
+  tone.cents = c;
+  updateTonePitch(tone);
+  refreshToneFreq(id);
+  updateUrlSilently();
+}
+
+function setToneTimbre(id, timbre) {
+  const tone = state.tones.find(t => t.id === id);
+  if (!tone || !TONE_TIMBRES[timbre]) return;
+  tone.timbre = timbre;
+  if (tone.gainNode) { hardStopTone(tone); buildToneNodes(tone); }
+  updateUrlSilently();
+}
+
+function setToneVolume(id, vol) {
+  const tone = state.tones.find(t => t.id === id);
+  if (!tone) return;
+  tone.volume = vol;
+  const ctx = state.audioCtx;
+  if (tone.gainNode && !tone.muted && ctx) {
+    const now = ctx.currentTime;
+    tone.gainNode.gain.setTargetAtTime(vol, now, 0.02);
+    if (tone.tremolo && tone.preset) {
+      tone.tremolo.lfoGain.gain.setTargetAtTime(tone.preset.tremoloDepth * vol, now, 0.02);
+    }
+  }
+}
+
+function toggleToneMute(id) {
+  const tone = state.tones.find(t => t.id === id);
+  if (!tone) return;
+  tone.muted = !tone.muted;
+  const ctx = state.audioCtx;
+  if (tone.gainNode && ctx) {
+    const now = ctx.currentTime;
+    const target = tone.muted ? 0 : tone.volume;
+    tone.gainNode.gain.setTargetAtTime(target, now, 0.03);
+    if (tone.tremolo && tone.preset) {
+      tone.tremolo.lfoGain.gain.setTargetAtTime(tone.preset.tremoloDepth * target, now, 0.03);
+    }
+  }
+  renderToneStrips();
+}
+
+function renderToneStrips() {
+  const container = document.getElementById('toneStrips');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (state.tones.length === 0) {
+    container.innerHTML = '<div class="tone-empty">No tones yet — add one to layer a frequency over your bowls.</div>';
+    return;
+  }
+
+  state.tones.forEach(tone => {
+    const freq = noteToFreq(tone.note, tone.octave, tone.cents);
+    const strip = document.createElement('div');
+    strip.className = 'channel-strip tone-strip' + (tone.muted ? ' muted' : '');
+    strip.dataset.id = tone.id;
+
+    strip.innerHTML = `
+      <select class="tone-select tone-pitch-select" title="Pitch (octave + note)">
+        ${TONE_OCTAVES.map(o => TONE_NOTE_ORDER.map(n =>
+          `<option value="${o}:${n}"${(o === tone.octave && n === tone.note) ? ' selected' : ''}>${o}${n}</option>`
+        ).join('')).join('')}
+      </select>
+      <div class="tone-cents-row">
+        <label>cents</label>
+        <input type="number" class="tone-cents-input" min="-100" max="100" step="1" value="${tone.cents}">
+      </div>
+      <select class="tone-select tone-timbre-select" title="Timbre">
+        ${Object.keys(TONE_TIMBRES).map(k => `<option value="${k}"${k === tone.timbre ? ' selected' : ''}>${TONE_TIMBRES[k].label}</option>`).join('')}
+      </select>
+      <div class="tone-freq">${freq.toFixed(1)} Hz</div>
+      <button class="channel-mute-btn">${tone.muted ? 'Unmute' : 'Mute'}</button>
+      <input type="range" class="channel-volume" min="0" max="1" step="0.02" value="${tone.volume}">
+      <button class="channel-remove-btn" title="Remove">✕ remove</button>
+    `;
+
+    strip.querySelector('.tone-pitch-select').addEventListener('change', (e) => setTonePitch(tone.id, e.target.value));
+    strip.querySelector('.tone-cents-input').addEventListener('input', (e) => setToneCents(tone.id, e.target.value));
+    strip.querySelector('.tone-timbre-select').addEventListener('change', (e) => setToneTimbre(tone.id, e.target.value));
+    strip.querySelector('.channel-mute-btn').addEventListener('click', () => toggleToneMute(tone.id));
+    strip.querySelector('.channel-volume').addEventListener('input', (e) => setToneVolume(tone.id, parseFloat(e.target.value)));
+    strip.querySelector('.channel-remove-btn').addEventListener('click', () => removeTone(tone.id));
+
+    container.appendChild(strip);
+  });
+}
+
+// Tones from a shared URL can't auto-start (no user gesture yet); start them on first interaction.
+let tonesAutostartArmed = false;
+function armTonesAutostart() {
+  if (tonesAutostartArmed) return;
+  tonesAutostartArmed = true;
+  const handler = () => {
+    ensureTonesPlaying();
+    window.removeEventListener('pointerdown', handler);
+    window.removeEventListener('keydown', handler);
+  };
+  window.addEventListener('pointerdown', handler);
+  window.addEventListener('keydown', handler);
+}
+
+// Share-URL serialization: e.g. "G3-20~pure" (cents/timbre omitted when default).
+function toneToParam(t) {
+  const c = t.cents === 0 ? '' : (t.cents > 0 ? `+${t.cents}` : `${t.cents}`);
+  const tb = (t.timbre && t.timbre !== DEFAULT_TIMBRE) ? `~${t.timbre}` : '';
+  return `${t.note}${t.octave}${c}${tb}`;
+}
+
+function parseToneParam(str) {
+  const m = (str || '').trim().match(/^([A-G]#?)(\d)([+-]\d+)?(?:~([a-z]+))?$/);
+  if (!m) return null;
+  const note = m[1];
+  if (!NOTE_NAMES.includes(note)) return null;
+  const octave = parseInt(m[2], 10);
+  if (!TONE_OCTAVES.includes(octave)) return null;
+  let cents = m[3] ? parseInt(m[3], 10) : 0;
+  cents = Math.max(-100, Math.min(100, cents));
+  const timbre = (m[4] && TONE_TIMBRES[m[4]]) ? m[4] : DEFAULT_TIMBRE;
+  return { note, octave, cents, timbre };
+}
+
+/* ======================================
+   DETAIL MODAL
+   ====================================== */
+let modalCarouselIndex = 0;
+
+function openDetail(piece) {
+  const modal = document.getElementById('detailModal');
+  const carousel = document.getElementById('modalCarousel');
+  const body = document.getElementById('modalBody');
+
+  // Carousel
+  modalCarouselIndex = 0;
+  const images = piece.images || [];
+  carousel.innerHTML = '';
+
+  if (images.length === 0) {
+    carousel.innerHTML = '<div class="placeholder-img ph-1 active" style="position:absolute;inset:0;">No images</div>';
+  } else {
+    images.forEach((src, i) => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = piece.title;
+      if (i === 0) img.classList.add('active');
+      img.onerror = function() {
+        this.outerHTML = `<div class="placeholder-img ph-${(i % 5) + 1}${i === 0 ? ' active' : ''}" style="position:absolute;inset:0;">${piece.title[0]}</div>`;
+      };
+      carousel.appendChild(img);
+    });
+
+    if (images.length > 1) {
+      const nav = document.createElement('div');
+      nav.className = 'carousel-nav';
+      images.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        nav.appendChild(dot);
+      });
+      carousel.appendChild(nav);
+    }
+  }
+
+  // Swipe support
+  let touchStartX = 0;
+  carousel.ontouchstart = (e) => { touchStartX = e.touches[0].clientX; };
+  carousel.ontouchend = (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && modalCarouselIndex < images.length - 1) goToSlide(modalCarouselIndex + 1);
+      else if (diff < 0 && modalCarouselIndex > 0) goToSlide(modalCarouselIndex - 1);
+    }
+  };
+
+  // Body
+  const dateStr = piece.date ? new Date(piece.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+
+  let html = `
+    <div class="modal-title">${piece.title}</div>
+    ${dateStr ? `<div class="modal-date">${dateStr}</div>` : ''}
+    <div class="modal-desc">${piece.description || ''}</div>
+    <div class="modal-tags">${(piece.tags || []).map(t => `<span class="card-tag">${t}</span>`).join('')}</div>
+  `;
+
+  // Audio player
+  if (piece.audio) {
+    html += `
+      <div class="modal-audio-player">
+        <button class="modal-audio-btn" id="modalAudioBtn">
+          <svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
+        </button>
+        <span class="modal-audio-label">Preview this frequency</span>
+      </div>
+    `;
+  }
+
+  // Private fields
+  if (piece.private && state.unlocked) {
+    html += '<div class="modal-private"><div class="modal-private-title">🔓 Private Details</div>';
+    Object.entries(piece.private).forEach(([key, val]) => {
+      const decrypted = decryptField(val);
+      html += `<div class="modal-private-field"><strong>${key}:</strong> ${decrypted}</div>`;
+    });
+    html += '</div>';
+  } else if (piece.private && !state.unlocked) {
+    html += '<div class="modal-private"><div class="modal-private-title">🔒 Private Details</div><div class="modal-private-field" style="color:var(--text-muted);font-style:italic;">Enter passphrase to view</div></div>';
+  }
+
+  body.innerHTML = html;
+
+  // Audio button handler
+  let modalAudio = null;
+  const audioBtn = document.getElementById('modalAudioBtn');
+  if (audioBtn) {
+    audioBtn.addEventListener('click', async () => {
+      if (modalAudio) {
+        modalAudio.pause();
+        modalAudio = null;
+        audioBtn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>';
+      } else {
+        modalAudio = new Audio(piece.audio);
+        modalAudio.loop = true;
+        await modalAudio.play();
+        audioBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+        modalAudio.onended = () => {
+          audioBtn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>';
+          modalAudio = null;
+        };
+      }
+    });
+  }
+
+  modal.classList.add('open');
+
+  // Close handler (clean up audio)
+  const closeHandler = () => {
+    if (modalAudio) { modalAudio.pause(); modalAudio = null; }
+    modal.classList.remove('open');
+  };
+  document.getElementById('modalClose').onclick = closeHandler;
+  modal.onclick = (e) => { if (e.target === modal) closeHandler(); };
+}
+
+function goToSlide(idx) {
+  const carousel = document.getElementById('modalCarousel');
+  const slides = carousel.querySelectorAll('img, .placeholder-img');
+  const dots = carousel.querySelectorAll('.carousel-dot');
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  modalCarouselIndex = idx;
+}
+
+/* ======================================
+   ENCRYPTION / DECRYPTION
+   ====================================== */
+function decryptField(encryptedValue) {
+  if (!state.passphrase) return '[locked]';
+  try {
+    const decrypted = CryptoJS.AES.decrypt(encryptedValue, state.passphrase);
+    const text = decrypted.toString(CryptoJS.enc.Utf8);
+    return text || encryptedValue; // If decryption fails, show raw (unencrypted) value
+  } catch (e) {
+    return encryptedValue; // Might not be encrypted (dev mode)
+  }
+}
+
+/* ======================================
+   EVENT LISTENERS
+   ====================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+
+  // Unlock toggle
+  const unlockToggle = document.getElementById('unlockToggle');
+  const unlockInput = document.getElementById('unlockInput');
+  const unlockSubmit = document.getElementById('unlockSubmit');
+  const unlockStatus = document.getElementById('unlockStatus');
+
+  unlockToggle.addEventListener('click', () => {
+    if (state.unlocked) {
+      state.unlocked = false;
+      state.passphrase = null;
+      unlockToggle.innerHTML = '<span class="btn-icon">🔒</span> Unlock';
+      unlockStatus.textContent = '';
+      unlockInput.style.display = 'none';
+      unlockSubmit.style.display = 'none';
+      return;
+    }
+    unlockInput.style.display = unlockInput.style.display === 'none' ? '' : 'none';
+    unlockSubmit.style.display = unlockSubmit.style.display === 'none' ? '' : 'none';
+    if (unlockInput.style.display !== 'none') unlockInput.focus();
+  });
+
+  const doUnlock = () => {
+    const pass = unlockInput.value.trim();
+    if (!pass) return;
+    state.passphrase = pass;
+    state.unlocked = true;
+    unlockToggle.innerHTML = '<span class="btn-icon">🔓</span> Locked';
+    unlockStatus.textContent = 'Unlocked';
+    unlockInput.style.display = 'none';
+    unlockSubmit.style.display = 'none';
+    unlockInput.value = '';
+  };
+
+  unlockSubmit.addEventListener('click', doUnlock);
+  unlockInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doUnlock(); });
+
+  // Mixer expand/collapse
+  document.getElementById('mixerExpandBtn').addEventListener('click', () => {
+    document.getElementById('mixerExpanded').classList.add('open');
+    state.expandedMixer = true;
+  });
+
+  document.getElementById('mixerCloseBtn').addEventListener('click', () => {
+    document.getElementById('mixerExpanded').classList.remove('open');
+    state.expandedMixer = false;
+  });
+
+  // Play buttons
+  const handlePlay = () => {
+    if (state.playing) stopAll();
+    else playAll();
+  };
+  document.getElementById('masterPlayBtn').addEventListener('click', handlePlay);
+  document.getElementById('collapsedPlayBtn').addEventListener('click', handlePlay);
+
+  // Stop button
+  document.getElementById('masterStopBtn').addEventListener('click', stopAll);
+
+  // Share button
+  document.getElementById('shareBtn').addEventListener('click', copyShareLink);
+
+  // Tone Generator buttons
+  document.getElementById('toolbarAddToneBtn').addEventListener('click', () => addTone());
+  document.getElementById('addToneBtn').addEventListener('click', () => addTone());
+  document.getElementById('tonesMuteAllBtn').addEventListener('click', () => setAllTonesMuted(true));
+  document.getElementById('tonesUnmuteAllBtn').addEventListener('click', () => setAllTonesMuted(false));
+
+  // Close modal on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('detailModal').classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>

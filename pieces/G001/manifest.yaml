@@ -1,0 +1,13 @@
+id: G001
+type: bowl
+title: ""
+date: 2026-07-11
+size: ""
+tone_factory: ""
+tone_local: "4B+24"
+color_type: "Gold"
+notes: "Chalice1, higher angle bowl"
+images:
+  - photo-001.jpg
+audio: audio.mp3
+audio_source: audio.wav

@@ -1,0 +1,13 @@
+id: D047
+type: bowl
+title: ""
+date: 2026-07-11
+size: "6.3"
+tone_factory: "4F#-41"
+tone_local: "4F#-38"
+color_type: "Clear"
+notes: ""
+images:
+  - photo-001.jpg
+audio: audio.mp3
+audio_source: audio.wav

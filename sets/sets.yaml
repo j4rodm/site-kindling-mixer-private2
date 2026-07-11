@@ -1,0 +1,7 @@
+- name: "Ocean & Light"
+  description: "Water and sky frequencies intertwined"
+  pieces: ["aurora-drift", "tidal-hum", "crystal-resonance"]
+
+- name: "Earth & Fire"
+  description: "Grounded warmth from the forest floor to the hearth"
+  pieces: ["ember-pulse", "moss-whisper", "aurora-drift"]

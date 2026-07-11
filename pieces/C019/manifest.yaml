@@ -1,0 +1,13 @@
+id: C019
+type: bowl
+title: ""
+date: 2026-07-11
+size: "12"
+tone_factory: "2A#+32"
+tone_local: "2A#+33"
+color_type: "Clear"
+notes: ""
+images:
+  - photo-001.jpg
+audio: audio.mp3
+audio_source: audio.wav
