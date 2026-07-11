@@ -1,20 +1,9 @@
 {
   "pieces": [
     {
-      "slug": "C012",
-      "title": "C012",
-      "date": "2026-05-31",
-      "tags": [],
-      "description": "",
-      "images": [
-        "pieces/C012/photo-001.jpg"
-      ],
-      "audio": "pieces/C012/audio.mp3"
-    },
-    {
       "slug": "C019",
       "title": "",
-      "date": "2026-05-31",
+      "date": "2026-07-11",
       "tags": [],
       "description": "",
       "images": [
@@ -23,31 +12,9 @@
       "audio": "pieces/C019/audio.mp3"
     },
     {
-      "slug": "D025",
-      "title": "D025",
-      "date": "2026-05-31",
-      "tags": [],
-      "description": "",
-      "images": [
-        "pieces/D025/photo-001.jpg"
-      ],
-      "audio": "pieces/D025/audio.mp3"
-    },
-    {
-      "slug": "D026",
-      "title": "D026",
-      "date": "2026-05-31",
-      "tags": [],
-      "description": "",
-      "images": [
-        "pieces/D026/photo-001.jpg"
-      ],
-      "audio": "pieces/D026/audio.mp3"
-    },
-    {
       "slug": "D034",
       "title": "",
-      "date": "2026-05-31",
+      "date": "2026-07-11",
       "tags": [],
       "description": "",
       "images": [
@@ -58,7 +25,7 @@
     {
       "slug": "D037",
       "title": "",
-      "date": "2026-05-31",
+      "date": "2026-07-11",
       "tags": [],
       "description": "",
       "images": [
@@ -67,20 +34,9 @@
       "audio": "pieces/D037/audio.mp3"
     },
     {
-      "slug": "D043",
-      "title": "D043",
-      "date": "2026-05-31",
-      "tags": [],
-      "description": "",
-      "images": [
-        "pieces/D043/photo-001.jpg"
-      ],
-      "audio": "pieces/D043/audio.mp3"
-    },
-    {
       "slug": "D047",
       "title": "",
-      "date": "2026-05-31",
+      "date": "2026-07-11",
       "tags": [],
       "description": "",
       "images": [
@@ -89,37 +45,26 @@
       "audio": "pieces/D047/audio.mp3"
     },
     {
-      "slug": "E009",
-      "title": "E009",
-      "date": "2026-05-31",
+      "slug": "G001",
+      "title": "",
+      "date": "2026-07-11",
       "tags": [],
       "description": "",
       "images": [
-        "pieces/E009/photo-002.jpg"
+        "pieces/G001/photo-001.jpg"
       ],
-      "audio": "pieces/E009/audio.mp3"
+      "audio": "pieces/G001/audio.mp3"
     },
     {
-      "slug": "F008",
-      "title": "F008",
-      "date": "2026-05-31",
+      "slug": "G002",
+      "title": "",
+      "date": "2026-07-11",
       "tags": [],
       "description": "",
       "images": [
-        "pieces/F008/photo-001.jpg"
+        "pieces/G002/photo-001.jpg"
       ],
-      "audio": "pieces/F008/audio.mp3"
-    },
-    {
-      "slug": "F029",
-      "title": "F029",
-      "date": "2026-05-31",
-      "tags": [],
-      "description": "",
-      "images": [
-        "pieces/F029/photo-001.jpg"
-      ],
-      "audio": "pieces/F029/audio.mp3"
+      "audio": "pieces/G002/audio.mp3"
     }
   ],
   "sets": [
