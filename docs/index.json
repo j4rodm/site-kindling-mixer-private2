@@ -43,28 +43,6 @@
         "pieces/D047/photo-001.jpg"
       ],
       "audio": "pieces/D047/audio.mp3"
-    },
-    {
-      "slug": "G001",
-      "title": "",
-      "date": "2026-07-11",
-      "tags": [],
-      "description": "",
-      "images": [
-        "pieces/G001/photo-001.jpg"
-      ],
-      "audio": "pieces/G001/audio.mp3"
-    },
-    {
-      "slug": "G002",
-      "title": "",
-      "date": "2026-07-11",
-      "tags": [],
-      "description": "",
-      "images": [
-        "pieces/G002/photo-001.jpg"
-      ],
-      "audio": "pieces/G002/audio.mp3"
     }
   ],
   "sets": [
